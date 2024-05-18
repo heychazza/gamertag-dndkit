@@ -21,6 +21,7 @@ import {
   useSortable
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {FigmaCard, GithubCard, SteamCard, TwitterCard} from "@/components/SocialBlocks";
 
 // Helper functions
 const arrayMove = (array, from, to) => {
@@ -171,6 +172,21 @@ export default function Gamertag() {
     return activeId === id ? { opacity: 0.5 } : { opacity: 1 };
   };
 
+  const renderBlock = (block) => {
+    switch (block.type) {
+      case 'Twitter':
+        return <TwitterCard username={block.username} />;
+      case 'Figma':
+        return <FigmaCard username={block.username} />;
+      case 'Github':
+        return <GithubCard username={block.username} />;
+      case 'Steam':
+        return <SteamCard username={block.username} />;
+      default:
+        return null;
+    }
+  };
+
   return (
       <div className="mx-auto max-w-4xl py-10">
         <div className="bg-gray-800 text-white p-6 rounded-lg">
@@ -203,34 +219,15 @@ export default function Gamertag() {
               <SortableContext items={blocks.map((i) => i.id)}>
                 {blocks.map((block) => (
                     <SortableItem key={block.id} id={block.id}>
-                      <motion.div
-                          layout
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          style={getBlockStyle(block.id)}
-                      >
-                        <Block id={block.id} type={block.type} username={block.username} />
-                      </motion.div>
+                      {renderBlock(block)}
                     </SortableItem>
                 ))}
               </SortableContext>
               <DragOverlay>
                 {activeId ? (
-                    <motion.div
-                        layout
-                        initial={{ opacity: 0.7 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.2 }}
-                        style={{ opacity: 0.7 }}
-                    >
-                      <Block
-                          id={activeId}
-                          type={blocks.find((block) => block.id === activeId)?.type || 'Twitter'}
-                          username={blocks.find((block) => block.id === activeId)?.username || ''}
-                      />
-                    </motion.div>
+                    <div className="h-full">
+                      {renderBlock(blocks.find((block) => block.id === activeId))}
+                    </div>
                 ) : null}
               </DragOverlay>
             </DndContext>
@@ -254,8 +251,9 @@ export default function Gamertag() {
                   onChange={(e) => setBlockType(e.target.value)}
               >
                 <option value="Twitter">Twitter</option>
+                <option value="Figma">Figma</option>
+                <option value="Github">Github</option>
                 <option value="Steam">Steam</option>
-                <option value="Clash of Clans">Clash of Clans</option>
               </select>
             </label>
             <Input
